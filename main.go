@@ -1,15 +1,9 @@
 package main
 
 import (
-	"os"
-	"fmt"
-
-	"github.com/FalcoSuessgott/gitag/ui"
-	"github.com/FalcoSuessgott/gitag/git"
+	"github.com/FalcoSuessgott/gitag/cmd"
 )
 
 func main() {
-	fmt.Println("Hello")
-
-	fmt.Println(git.IsGitRepository())
+	cmd.Execute()
 }

@@ -1,23 +1,26 @@
-package main
+package git
 
 import (
+	"fmt"
 	"testing"
-	"os"
+
+	"github.com/integralist/go-findroot/find"
 )
 
-func TestIsGitRepo1(t *testing.T){
-	if !isGitRepository(){
+func TestIsGitRepo1(t *testing.T) {
+	root, err := find.Repo()
+	if err != nil {
+		t.Fail()
+	}
+
+	fmt.Print(root)
+	if !IsGitRepository(root.Path) {
 		t.Fail()
 	}
 }
 
-func TestIsGitRepo2(t *testing.T){
-	err := os.Chdir("/tmp")
-	if err != nil {
-		panic(err)
-		
-	}
-	if isGitRepository(){
+func TestIsGitRepo2(t *testing.T) {
+	if IsGitRepository("/tmp") {
 		t.Fail()
 	}
 }
