@@ -43,16 +43,20 @@ func init() {
 }
 
 func gitag() {
-	wd, _ := os.Getwd()
-	if !git.IsGitRepository(wd) {
-		ui.ErrorMsg(nil, "%s is not a git repository. Exiting", wd)
+	dir, err := git.GetRootDir()
+	if err != nil {
+		ui.ErrorMsg(nil, "%s is not a git repository. Exiting", dir)
 	}
 
-	tags := git.GetTags(wd)
+	tags := git.GetTags(dir)
 	latestTag := tags[len(tags)-1]
 
-	ui.InfoMsg("Found %s tags.", strconv.Itoa(len(tags)))
-	ui.SuccessMsg("Latest SemVer tag: %s", latestTag)
+	if len(tags) == 0 {
+		ui.InfoMsg("No tags found.")
+	} else {
+		ui.InfoMsg("Found %s tags.", strconv.Itoa(len(tags)))
+		ui.SuccessMsg("Latest SemVer tag: %s", latestTag)
+	}
 
 	v, err := semver.NewSemVer("1.0.0")
 	if err != nil {
@@ -65,11 +69,11 @@ func gitag() {
 
 	switch answer {
 	case 1: // major
-		git.AddTag(wd, semver.IncrementMajor(v), msg)
+		git.AddTag(dir, semver.IncrementMajor(v), msg)
 	case 2: // minor
-		git.AddTag(wd, semver.IncrementMinor(v), msg)
+		git.AddTag(dir, semver.IncrementMinor(v), msg)
 	case 3: // patch
-		git.AddTag(wd, semver.IncrementPatch(v), msg)
+		git.AddTag(dir, semver.IncrementPatch(v), msg)
 	}
 
 }

@@ -4,10 +4,23 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
+
+	"github.com/tcnksm/go-gitconfig"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
+	"github.com/go-git/go-git/v5/plumbing/object"
+
+	"github.com/integralist/go-findroot/find"
 )
+
+// GetRootDir returns the root directory of the git repository
+func GetRootDir() (string, error) {
+	dir, err := find.Repo()
+	return dir.Path, err
+
+}
 
 // IsGitRepository returns true if the directory is a Git repository
 func IsGitRepository(dir string) bool {
@@ -34,9 +47,38 @@ func GetTags(dir string) []string {
 	return tags
 }
 
+func getUsername() string {
+	username, err := gitconfig.Username()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return username
+}
+
+func getEmail() string {
+	email, err := gitconfig.Email()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return email
+}
+
+func defaultSignature() *object.Signature {
+	return &object.Signature{
+		Name:  getUsername(),
+		Email: getEmail(),
+		When:  time.Now(),
+	}
+}
+
 // AddTag adds a tag
 func AddTag(dir, tag string, message ...string) {
-	opts := &git.CreateTagOptions{}
+	opts := &git.CreateTagOptions{
+		Tagger: defaultSignature(),
+	}
+
 	r, _ := git.PlainOpen(dir)
 
 	head, err := r.Head()
