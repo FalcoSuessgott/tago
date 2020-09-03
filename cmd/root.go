@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/viper"
 )
 
+//TODO: option for prefix, default prefix : v
 var rootCmd = &cobra.Command{
 	Use:   "gitag",
 	Short: "Interactively bump git tags using SemVer",
@@ -45,35 +46,58 @@ func init() {
 func gitag() {
 	dir, err := git.GetRootDir()
 	if err != nil {
-		ui.ErrorMsg(nil, "%s is not a git repository. Exiting", dir)
+		ui.ErrorMsg(err, "%s is not a git repository. Exiting", dir)
 	}
 
-	tags := git.GetTags(dir)
-	latestTag := tags[len(tags)-1]
+	repo, err := git.Repo(dir)
+	if err != nil {
+		ui.ErrorMsg(err, "Can not open repository. Exiting", dir)
 
+	}
+
+	tags := git.GetTags(repo)
 	if len(tags) == 0 {
 		ui.InfoMsg("No tags found.")
-	} else {
-		ui.InfoMsg("Found %s tags.", strconv.Itoa(len(tags)))
-		ui.SuccessMsg("Latest SemVer tag: %s", latestTag)
+		// create tag
 	}
 
-	v, err := semver.NewSemVer("1.0.0")
-	if err != nil {
-		ui.ErrorMsg(err, "%s is not a valid SemVer-version number.", latestTag)
+	semVers := []*semver.SemVer{}
+	invalid := 0
+	for _, t := range tags {
+		v, err := semver.NewSemVer(t)
+		if err != nil {
+			ui.WarningMsg(err, "%s is not a valid SemVer-version number. Skipping", t)
+			invalid++
+		}
+		semVers = append(semVers, v)
 	}
 
-	parts := semver.BuildBumpedOptions(v)
-	answer := ui.PromptList("Which part to increment?", string(v.Minor), parts)
+	ui.InfoMsg("Found %s valid semVer tags. Invalid: %s tags.", strconv.Itoa(len(semVers)), strconv.Itoa(invalid))
+
+	highestSemVer := semver.HighestSemVer(semVers)
+	ui.SuccessMsg("Latest SemVer tag: %s", highestSemVer.Version.String())
+
+	parts := highestSemVer.BuildBumpedOptions()
+	answer := ui.PromptList("Which part to increment?", parts[1], parts)
 	msg := ui.PromptMsg("Message (optional):")
 
+	newSemVer := ""
 	switch answer {
-	case 1: // major
-		git.AddTag(dir, semver.IncrementMajor(v), msg)
-	case 2: // minor
-		git.AddTag(dir, semver.IncrementMinor(v), msg)
-	case 3: // patch
-		git.AddTag(dir, semver.IncrementPatch(v), msg)
+	case 0:
+		newSemVer = highestSemVer.BumpMajor()
+	case 1:
+		newSemVer = highestSemVer.BumpMinor()
+	case 2:
+		newSemVer = highestSemVer.BumpPatch()
+	default:
+		ui.ErrorMsg(nil, "Invalid Option.")
 	}
 
+	err = git.AddTag(repo, newSemVer, msg)
+	if err != nil {
+		ui.ErrorMsg(nil, "Could not create tag %s. Error: %s", newSemVer, err.Error())
+	}
+
+	ui.SuccessMsg("Successfully created new Tag %s.", newSemVer)
+	fmt.Println(git.GetTags(repo))
 }

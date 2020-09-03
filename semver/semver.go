@@ -2,53 +2,61 @@ package semver
 
 import (
 	"fmt"
-	"log"
+	"sort"
 
-	"github.com/blang/semver/v4"
+	"github.com/Masterminds/semver"
 )
 
-// NewSemVer returns a new SemVer object of the provided version
-func NewSemVer(version string) (semver.Version, error) {
-	return semver.Make(version)
+// SemVer represents a SemVer struct
+type SemVer struct {
+	Version *semver.Version
 }
 
-// IncrementMajor increments the major Version
-func IncrementMajor(v semver.Version) string {
-	err := v.IncrementMajor()
-	if err != nil {
-		log.Print(err)
-	}
-
+func (sv *SemVer) BumpMajor() string {
+	v := sv.Version.IncMajor()
 	return v.String()
 }
 
-// IncrementMinor increments the minor Version
-func IncrementMinor(v semver.Version) string {
-	err := v.IncrementMinor()
-	if err != nil {
-		log.Print(err)
-	}
-
+func (sv *SemVer) BumpMinor() string {
+	v := sv.Version.IncMinor()
 	return v.String()
 }
 
-// IncrementPatch increments the patch Version
-func IncrementPatch(v semver.Version) string {
-	err := v.IncrementPatch()
-	if err != nil {
-		log.Print(err)
+func (sv *SemVer) BumpPatch() string {
+	v := sv.Version.IncPatch()
+	return v.String()
+}
+
+// HighestSemVer returns the highest SemVer
+func HighestSemVer(vs []*SemVer) *SemVer {
+	sv := []*semver.Version{}
+
+	for _, s := range vs {
+		sv = append(sv, s.Version)
 	}
 
-	return v.String()
+	sort.Sort(semver.Collection(sv))
+	return vs[0]
 }
 
 // BuildBumpedOptions returns the options for bump dialog
-func BuildBumpedOptions(v semver.Version) []string {
+func (sv *SemVer) BuildBumpedOptions() []string {
 	opts := []string{}
-	strfmt := "v%s => v%s (%s)"
-	opts = append(opts, fmt.Sprintf(strfmt, v.String(), IncrementMajor(v), "Major"))
-	opts = append(opts, fmt.Sprintf(strfmt, v.String(), IncrementMinor(v), "Minor"))
-	opts = append(opts, fmt.Sprintf(strfmt, v.String(), IncrementPatch(v), "Patch"))
+	strfmt := "%s => %s (%s)"
+
+	majorBump := sv.Version.IncMajor()
+	minorBump := sv.Version.IncMinor()
+	patchBump := sv.Version.IncPatch()
+
+	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), majorBump.String(), "Major"))
+	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), minorBump.String(), "Minor"))
+	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), patchBump.String(), "Patch"))
 
 	return opts
+}
+
+// NewSemVer returns a new SemVer struct
+func NewSemVer(t string) (*SemVer, error) {
+	v, e := semver.NewVersion(t)
+	return &SemVer{v}, e
 }

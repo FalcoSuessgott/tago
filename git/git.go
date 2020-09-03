@@ -1,7 +1,6 @@
 package git
 
 import (
-	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -30,10 +29,8 @@ func IsGitRepository(dir string) bool {
 }
 
 // GetTags returns a list of git tags
-func GetTags(dir string) []string {
-
+func GetTags(r *git.Repository) []string {
 	tags := []string{}
-	r, _ := git.PlainOpen(dir)
 	tagRefs, _ := r.Tags()
 
 	err := tagRefs.ForEach(func(t *plumbing.Reference) error {
@@ -73,27 +70,28 @@ func defaultSignature() *object.Signature {
 	}
 }
 
-// AddTag adds a tag
-func AddTag(dir, tag string, message ...string) {
-	opts := &git.CreateTagOptions{
-		Tagger: defaultSignature(),
-	}
+// Repo returns the repository handle
+func Repo(dir string) (*git.Repository, error) {
+	return git.PlainOpen(dir)
 
-	r, _ := git.PlainOpen(dir)
+}
+
+// AddTag adds a tag
+func AddTag(r *git.Repository, tag, message string) error {
+	opts := &git.CreateTagOptions{
+		Tagger:  defaultSignature(),
+		Message: message,
+	}
 
 	head, err := r.Head()
 	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Println(head)
-	if len(message) > 0 {
-		opts.Message = message[0]
+		return err
 	}
 
 	_, err = r.CreateTag(tag, head.Hash(), opts)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
+	return nil
 }
