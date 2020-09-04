@@ -3,13 +3,19 @@ package semver
 import (
 	"fmt"
 	"sort"
+	"strings"
 
 	"github.com/Masterminds/semver"
+)
+
+const (
+	defaultPrefix = "v"
 )
 
 // SemVer represents a SemVer struct
 type SemVer struct {
 	Version *semver.Version
+	Prefix  string
 }
 
 func (sv *SemVer) BumpMajor() string {
@@ -29,13 +35,20 @@ func (sv *SemVer) BumpPatch() string {
 
 // HighestSemVer returns the highest SemVer
 func HighestSemVer(vs []*SemVer) *SemVer {
-	sv := []*semver.Version{}
+	sv := make([]*semver.Version, len(vs))
 
-	for _, s := range vs {
-		sv = append(sv, s.Version)
+	for i, v := range vs {
+		sv[i] = v.Version
 	}
 
 	sort.Sort(semver.Collection(sv))
+
+	for _, v := range vs {
+		if sv[len(sv)-1] == v.Version {
+			return v
+		}
+	}
+
 	return vs[0]
 }
 
@@ -56,7 +69,20 @@ func (sv *SemVer) BuildBumpedOptions() []string {
 }
 
 // NewSemVer returns a new SemVer struct
-func NewSemVer(t string) (*SemVer, error) {
-	v, e := semver.NewVersion(t)
-	return &SemVer{v}, e
+func NewSemVer(t string, prefix bool) (*SemVer, error) {
+	var v *semver.Version
+	var e error
+	p := ""
+
+	if strings.HasPrefix(t, defaultPrefix) || prefix {
+		t = strings.Replace(t, "v", "", -1)
+		v, e = semver.NewVersion(t)
+		p = defaultPrefix
+	}
+
+	if !strings.HasPrefix(t, defaultPrefix) && !prefix {
+		v, e = semver.NewVersion(t)
+	}
+
+	return &SemVer{v, p}, e
 }

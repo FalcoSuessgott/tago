@@ -19,7 +19,8 @@ var rootCmd = &cobra.Command{
 	Short: "Interactively bump git tags using SemVer",
 	Long:  "",
 	Run: func(cmd *cobra.Command, args []string) {
-		gitag()
+		p, _ := cmd.Flags().GetBool("prefix")
+		gitag(p)
 	},
 }
 
@@ -32,7 +33,8 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().BoolP("push", "p", false, "pushes to remote after tag has been created")
+	rootCmd.PersistentFlags().BoolP("prefix", "v", true, "create tag with a leading \"v\" as tagprefix (e.g v1.1.2)")
+	rootCmd.PersistentFlags().BoolP("push", "p", false, "pushes new tag to the specified remote")
 	rootCmd.PersistentFlags().StringP("remote", "r", "origin", "name of the remote")
 	rootCmd.PersistentFlags().StringP("msg", "m", "", "tag message")
 
@@ -43,7 +45,7 @@ func init() {
 	viper.SetDefault("remote", "origin")
 }
 
-func gitag() {
+func gitag(prefix bool) {
 	dir, err := git.GetRootDir()
 	if err != nil {
 		ui.ErrorMsg(err, "%s is not a git repository. Exiting", dir)
@@ -57,17 +59,20 @@ func gitag() {
 
 	tags := git.GetTags(repo)
 	if len(tags) == 0 {
-		ui.InfoMsg("No tags found.")
+		ui.WarningMsg(nil, "No tags found.")
 		// create tag
 	}
+	ui.InfoMsg("Found %s tags.", strconv.Itoa(len(tags)))
 
 	semVers := []*semver.SemVer{}
 	invalid := 0
 	for _, t := range tags {
-		v, err := semver.NewSemVer(t)
+		// handle tags with v prefix
+		v, err := semver.NewSemVer(t, prefix)
 		if err != nil {
-			ui.WarningMsg(err, "%s is not a valid SemVer-version number. Skipping", t)
+			ui.WarningMsg(nil, "%s is not a valid SemVer-version number. Skipping.", t)
 			invalid++
+			continue
 		}
 		semVers = append(semVers, v)
 	}
