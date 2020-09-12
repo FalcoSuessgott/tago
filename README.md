@@ -1,4 +1,5 @@
-# tago
+# tago [![Go Report Card](https://goreportcard.com/badge/github.com/FalcoSuessgott/tago)](https://goreportcard.com/badge/github.com/FalcoSuessgott/tago) 
+
 <p align="center">
   <img src="demo.gif" />
 </p>
