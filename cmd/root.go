@@ -31,7 +31,7 @@ var (
 	errParseError = errors.New("cannot parse flag")
 	rootCmd       = &cobra.Command{
 		Use:   "tago",
-		Short: "Interactively bump git tags using SemVer",
+		Short: "bumping semantic versioning git tags",
 		Long:  "",
 		Run: func(cmd *cobra.Command, args []string) {
 			var g Tago
@@ -62,7 +62,7 @@ var (
 
 			err := g.Repository.AddTag(newTag, g.Message)
 			if err != nil {
-				ui.ErrorMsg(err, "could not create tag %s", newTag)
+				ui.ErrorMsg(err, "could not create tag: %s", newTag)
 			}
 
 			ui.SuccessMsg("successfully created tag: %s", newTag)
@@ -87,14 +87,14 @@ func Execute() {
 }
 
 func init() {
-	rootCmd.PersistentFlags().Bool("prefix", false, "create tag with a leading \"v\" as tagprefix (e.g v1.1.2)")
-	rootCmd.PersistentFlags().BoolP("push", "p", false, "pushes new tag to the specified remote")
-	rootCmd.PersistentFlags().StringP("remote", "r", "origin", "name of the remote")
-	rootCmd.PersistentFlags().StringP("msg", "m", "", "tag message")
+	rootCmd.PersistentFlags().Bool("prefix", false, "use \"v\" as prefix")
+	rootCmd.PersistentFlags().BoolP("push", "p", false, "push tag afterwards")
+	rootCmd.PersistentFlags().StringP("remote", "r", "origin", "remote")
+	rootCmd.PersistentFlags().StringP("msg", "m", "", "tag annotation message")
 
-	rootCmd.PersistentFlags().Bool("major", false, "bump major version part")
-	rootCmd.PersistentFlags().Bool("minor", false, "bump minor version part")
-	rootCmd.PersistentFlags().Bool("patch", false, "bump patch version part")
+	rootCmd.PersistentFlags().BoolP("major", "x", false, "bump major version part")
+	rootCmd.PersistentFlags().BoolP("minor", "y", false, "bump minor version part")
+	rootCmd.PersistentFlags().BoolP("patch", "z", false, "bump patch version part")
 
 	viper.SetDefault("remote", "origin")
 }

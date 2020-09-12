@@ -65,9 +65,9 @@ func (sv *SemVer) BuildBumpedOptions() []string {
 		strfmt = "v%s => v%s (%s)"
 	}
 
-	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), majorBump.String(), "Major"))
-	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), minorBump.String(), "Minor"))
-	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), patchBump.String(), "Patch"))
+	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), majorBump.String(), "Major: breaking API change"))
+	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), minorBump.String(), "Minor: feature add"))
+	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), patchBump.String(), "Patch: bug fix"))
 
 	return opts
 }
