@@ -8,26 +8,26 @@ import (
 	"github.com/Masterminds/semver"
 )
 
-const (
-	defaultPrefix = "v"
-)
-
 // SemVer represents a SemVer struct
 type SemVer struct {
 	Version *semver.Version
-	Prefix  string
+	Prefix  bool
+	String  string
 }
 
+// BumpMajor bumps major part
 func (sv *SemVer) BumpMajor() string {
 	v := sv.Version.IncMajor()
 	return v.String()
 }
 
+// BumpMinor bumps minor part
 func (sv *SemVer) BumpMinor() string {
 	v := sv.Version.IncMinor()
 	return v.String()
 }
 
+// BumpPatch bumps patch part
 func (sv *SemVer) BumpPatch() string {
 	v := sv.Version.IncPatch()
 	return v.String()
@@ -61,6 +61,10 @@ func (sv *SemVer) BuildBumpedOptions() []string {
 	minorBump := sv.Version.IncMinor()
 	patchBump := sv.Version.IncPatch()
 
+	if sv.Prefix {
+		strfmt = "v%s => v%s (%s)"
+	}
+
 	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), majorBump.String(), "Major"))
 	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), minorBump.String(), "Minor"))
 	opts = append(opts, fmt.Sprintf(strfmt, sv.Version.String(), patchBump.String(), "Patch"))
@@ -69,20 +73,13 @@ func (sv *SemVer) BuildBumpedOptions() []string {
 }
 
 // NewSemVer returns a new SemVer struct
-func NewSemVer(t string, prefix bool) (*SemVer, error) {
-	var v *semver.Version
-	var e error
-	p := ""
+func NewSemVer(t string) (*SemVer, error) {
+	v, e := semver.NewVersion(t)
+	hasPrefix := false
 
-	if strings.HasPrefix(t, defaultPrefix) || prefix {
-		t = strings.Replace(t, "v", "", -1)
-		v, e = semver.NewVersion(t)
-		p = defaultPrefix
+	if strings.HasPrefix(t, "v") {
+		hasPrefix = true
 	}
 
-	if !strings.HasPrefix(t, defaultPrefix) && !prefix {
-		v, e = semver.NewVersion(t)
-	}
-
-	return &SemVer{v, p}, e
+	return &SemVer{v, hasPrefix, t}, e
 }

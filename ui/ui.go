@@ -117,7 +117,7 @@ func PromptMsg(msg string) string {
 
 	err := survey.AskOne(prompt, &res)
 	if err != nil {
-		return ""
+		return " "
 	}
 
 	return res
