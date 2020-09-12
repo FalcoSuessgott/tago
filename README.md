@@ -1,11 +1,43 @@
 # tago
-[![GoDoc](https://godoc.org/github.com/blang/semver/v4?status.svg)](https://godoc.org/github.com/FalcoSuessgott/gitag) 
-[![Coverage Status](https://img.shields.io/coveralls/blang/semver.svg)](https://coveralls.io/r/FalcoSuessgott/gitag?branch=master) 
-[![Go Report Card](https://goreportcard.com/badge/github.com/blang/semver)](https://goreportcard.com/report/github.com/FalcoSuessgott/gitag)
+<p align="center">
+  <img src="demo.gif" />
+</p>
 
-`tago` lets you interactively bumping [semver](https://semver.org/lang/de/) git tags.
+`tago` lets you bump [semver](https://semver.org/lang/de/) git tags.
 
 # Features
-* detecting semver tags with "v"-prefix
-* creating initial semver tag
-* 
+* detecting and handling semver tags with or without "v"-prefix
+* creating initial tag if no tags exist
+* interactive user prompting
+* automatable using cli params for scripting purposes
+* push option
+
+# Installation
+```
+go get github.com/FalcoSuessgott/tago
+```
+
+# Usage
+```
+tago -h                                        
+Interactively bump git tags using SemVer
+
+Usage:
+  tago [flags]
+
+Flags:
+  -h, --help            help for tago
+      --major           bump major version part
+      --minor           bump minor version part
+  -m, --msg string      tag message
+      --patch           bump patch version part
+      --prefix          create tag with a leading "v" as tagprefix (e.g v1.1.2)
+  -p, --push            pushes new tag to the specified remote
+  -r, --remote string   name of the remote (default "origin")
+```
+# Examples
+## bump minor version
+```
+tago -p --minor -m "minor bump"
+```
+

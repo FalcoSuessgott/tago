@@ -1,0 +1,192 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: sh
+  
+  # Specify the current working directory path
+  # the default is the current working directory path
+  #cwd: /t
+  
+  # Export additional ENV variables
+  env:
+    recording: true
+  
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 80
+  
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 20
+  
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+  
+  # Quality
+  # 1 - 100
+  quality: 100
+  
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+  
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+  
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: solid
+    title: null
+    style: []
+  
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: 
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 50px
+      opacity: 0.5
+  
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+  
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+  
+  # The size of the font
+  fontSize: 16
+  
+  # The height of lines
+  lineHeight: 1
+  
+  # The spacing between letters
+  letterSpacing: 0
+  
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+  
+# Records, feel free to edit them
+records:
+  - delay: 557
+    content: '$ '
+  - delay: 1196
+    content: t
+  - delay: 198
+    content: a
+  - delay: 206
+    content: g
+  - delay: 104
+    content: o
+  - delay: 371
+    content: "\r\n"
+  - delay: 5
+    content: "\e[36mfound 4 valid semVer tags. Invalid: 0 tags\e[0m\r\n\e[32mlatest SemVer tag: v1.3.0\e[0m\r\n\e[?7l\e[0G\e[2K\e[1;92m? \e[0m\e[1;99mwhich part to increment?\e[0m  \e[36m[Use arrows to move, type to filter]\e[0m\r\n\e[39m  v1.3.0 => v2.0.0 (Major)\e[0m\r\n\e[1;36m> v1.3.0 => v1.4.0 (Minor)\e[0m\r\n\e[39m  v1.3.0 => v1.3.1 (Patch)\e[0m\r\n\e[?25l"
+  - delay: 2282
+    content: "\e[?25h\e[0G\e[2K\e[1F\e[2K\e[1F\e[2K\e[1F\e[2K\e[1F\e[2K\e[1;92m? \e[0m\e[1;99mwhich part to increment?\e[0m\e[36m v1.3.0 => v1.4.0 (Minor)\e[0m\r\n\e[?7h\e[0G\e[2K\e[1;92m? \e[0m\e[1;99mmessage (optional): \e[0m\e[?25l\e7\e[999;999f\e[6n\e8\e[?25h\e[6n"
+  - delay: 1337
+    content: m
+  - delay: 63
+    content: i
+  - delay: 115
+    content: 'n'
+  - delay: 72
+    content: o
+  - delay: 75
+    content: r
+  - delay: 107
+    content: ' '
+  - delay: 123
+    content: c
+  - delay: 70
+    content: h
+  - delay: 121
+    content: a
+  - delay: 25
+    content: 'n'
+  - delay: 208
+    content: g
+  - delay: 182
+    content: e
+  - delay: 173
+    content: s
+  - delay: 146
+    content: "\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1D\e[1E\e[1F\e[0G\e[2K\e[1;92m? \e[0m\e[1;99mmessage (optional): \e[0m\e[36mminor changes\e[0m\r\n"
+  - delay: 9
+    content: "\e[32msuccessfully created tag: v1.4.0\e[0m\r\n$ "
+  - delay: 1432
+    content: g
+  - delay: 48
+    content: i
+  - delay: 123
+    content: t
+  - delay: 33
+    content: ' '
+  - delay: 117
+    content: t
+  - delay: 195
+    content: a
+  - delay: 186
+    content: g
+  - delay: 123
+    content: ' '
+  - delay: 86
+    content: '-'
+  - delay: 184
+    content: l
+  - delay: 111
+    content: "\r\n"
+  - delay: 7
+    content: "\e[?1049h\e[22;0;0t\e[?1h\e=\rv1.0.0\e[m\r\nv1.1.0\e[m\r\nv1.2.0\e[m\r\nv1.3.0\e[m\r\nv1.4.0\e[m\r\n\e[01;33m(END)\e[0m\e[K"
+  - delay: 904
+    content: "\r\e[K\e[?1l\e>\e[?1049l\e[23;0;0t$ "
+  - delay: 1097
+    content: e
+  - delay: 178
+    content: x
+  - delay: 133
+    content: i
+  - delay: 110
+    content: t
+  - delay: 153
+    content: "\r\n"

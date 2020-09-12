@@ -1,7 +1,6 @@
 package git
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"strings"

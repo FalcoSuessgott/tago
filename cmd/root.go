@@ -65,7 +65,7 @@ var (
 				ui.ErrorMsg(err, "could not create tag %s", newTag)
 			}
 
-			ui.SuccessMsg("successfully added tag: %s", newTag)
+			ui.SuccessMsg("successfully created tag: %s", newTag)
 
 			if g.Push {
 				err := g.Repository.PushTags(g.Remote)
@@ -99,61 +99,61 @@ func init() {
 	viper.SetDefault("remote", "origin")
 }
 
-func (g *Tago) parseFlags(flags *pflag.FlagSet) {
+func (t *Tago) parseFlags(flags *pflag.FlagSet) {
 	var err error
 
-	g.Prefix, err = flags.GetBool("prefix")
+	t.Prefix, err = flags.GetBool("prefix")
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %w", "prefix", errParseError))
 	}
 
-	g.Push, err = flags.GetBool("push")
+	t.Push, err = flags.GetBool("push")
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %w", "push", errParseError))
 	}
 
-	g.Remote, err = flags.GetString("remote")
+	t.Remote, err = flags.GetString("remote")
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %w", "remote", errParseError))
 	}
 
-	g.Message, err = flags.GetString("msg")
+	t.Message, err = flags.GetString("msg")
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %w", "msg", errParseError))
 	}
 
-	g.Major, err = flags.GetBool("major")
+	t.Major, err = flags.GetBool("major")
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %w", "major", errParseError))
 	}
 
-	g.Minor, err = flags.GetBool("minor")
+	t.Minor, err = flags.GetBool("minor")
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %w", "minor", errParseError))
 	}
 
-	g.Patch, err = flags.GetBool("patch")
+	t.Patch, err = flags.GetBool("patch")
 	if err != nil {
 		fmt.Println(fmt.Errorf("%s: %w", "patch", errParseError))
 	}
 }
 
-func (g *tago) repo() {
+func (t *Tago) repo() {
 	var err error
 	dir, err := git.GetRootDir()
 	if err != nil {
 		ui.ErrorMsg(err, "%s is not a git repository. Exiting", dir)
 	}
 
-	g.Repository, err = git.NewRepository(dir)
+	t.Repository, err = git.NewRepository(dir)
 	if err != nil {
 		ui.ErrorMsg(err, "can not open repository. Exiting", dir)
 
 	}
 }
 
-func (g *tago) tags() {
-	tags := g.Repository.GetTags()
+func (t *Tago) tags() {
+	tags := t.Repository.GetTags()
 	if len(tags) == 0 {
 		ui.WarningMsg(nil, "no tags found")
 		newTag := ui.PromptMsg("new tag (e.g: v1.1.0):")
@@ -163,11 +163,11 @@ func (g *tago) tags() {
 			ui.ErrorMsg(err, "%s is not a valid SemVer-version number.", newTag)
 		}
 
-		if g.Message == "" {
-			g.Message = ui.PromptMsg("message (optional):")
+		if t.Message == "" {
+			t.Message = ui.PromptMsg("message (optional):")
 		}
 
-		err = g.Repository.AddTag(newTag, g.Message)
+		err = t.Repository.AddTag(newTag, t.Message)
 		if err != nil {
 			ui.ErrorMsg(err, "could not create tag %s", newTag)
 		}
@@ -190,24 +190,24 @@ func (g *tago) tags() {
 
 	ui.InfoMsg("found %s valid semVer tags. Invalid: %s tags", strconv.Itoa(len(semVers)), strconv.Itoa(invalid))
 
-	g.LatestTag = semver.HighestSemVer(semVers)
-	ui.SuccessMsg("latest SemVer tag: %s", g.LatestTag.String)
+	t.LatestTag = semver.HighestSemVer(semVers)
+	ui.SuccessMsg("latest SemVer tag: %s", t.LatestTag.String)
 }
 
-func (g *tago) prompt() string {
-	parts := g.LatestTag.BuildBumpedOptions()
+func (t *Tago) prompt() string {
+	parts := t.LatestTag.BuildBumpedOptions()
 	answer := ui.PromptList("which part to increment?", parts[1], parts)
-	if g.Message == "" {
-		g.Message = ui.PromptMsg("message (optional):")
+	if t.Message == "" {
+		t.Message = ui.PromptMsg("message (optional):")
 	}
 
 	switch answer {
 	case 0:
-		return g.LatestTag.BumpMajor()
+		return t.LatestTag.BumpMajor()
 	case 1:
-		return g.LatestTag.BumpMinor()
+		return t.LatestTag.BumpMinor()
 	case 2:
-		return g.LatestTag.BumpPatch()
+		return t.LatestTag.BumpPatch()
 	default:
 		ui.ErrorMsg(nil, "Invalid Option.")
 	}
