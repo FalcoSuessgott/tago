@@ -2,11 +2,11 @@
 # like `/bin/bash -l`, `ls`, or any other commands
 # the default is bash for Linux
 # or powershell.exe for Windows
-command: zsh
+command: sh
 
 # Specify the current working directory path
 # the default is the current working directory path
-#cwd: /t
+cwd: 
 
 # Export additional ENV variables
 env:
@@ -55,7 +55,7 @@ frameBox:
 # the image on your machine or a URL, and you can also
 # add your own CSS styles
 watermark:
-  imagePath: 
+  imagePath:
   style:
     position: absolute
     right: 15px
