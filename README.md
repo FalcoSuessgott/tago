@@ -9,6 +9,7 @@
 # Features
 * detecting and handling semver tags with or without "v"-prefix
 * creating initial tag if no tags exist
+* add lightweight or annotated [tags](https://git-scm.com/book/en/v2/Git-Basics-Tagging)
 * interactive user prompting
 * automatable using cli params for scripting purposes
 * push option

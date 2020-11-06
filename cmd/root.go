@@ -38,8 +38,8 @@ var (
 			var newTag string
 
 			g.parseFlags(cmd.Flags())
-			g.repo()
-			g.tags()
+			g.IsRepository()
+			g.GetTags()
 			if !g.Major && !g.Minor && !g.Patch {
 				newTag = g.prompt()
 			}
@@ -60,9 +60,16 @@ var (
 				newTag = defaultPrefix + newTag
 			}
 
-			err := g.Repository.AddTag(newTag, g.Message)
-			if err != nil {
-				ui.ErrorMsg(err, "could not create tag: %s", newTag)
+			if g.Message == "" {
+				err := g.Repository.CreateLightweightTag(newTag)
+				if err != nil {
+					ui.ErrorMsg(err, "could not create lightweight tag: %s", newTag)
+				}
+			} else {
+				err := g.Repository.CreateLightweightTag(newTag)
+				if err != nil {
+					ui.ErrorMsg(err, "could not create annotated tag: %s", newTag)
+				}
 			}
 
 			ui.SuccessMsg("successfully created tag: %s", newTag)
@@ -138,7 +145,8 @@ func (t *Tago) parseFlags(flags *pflag.FlagSet) {
 	}
 }
 
-func (t *Tago) repo() {
+// IsRepository exits if §PWD is not a git repository
+func (t *Tago) IsRepository() {
 	var err error
 	dir, err := git.GetRootDir()
 	if err != nil {
@@ -152,24 +160,36 @@ func (t *Tago) repo() {
 	}
 }
 
-func (t *Tago) tags() {
+// GetTags collects all existing tags
+func (t *Tago) GetTags() {
 	tags := t.Repository.GetTags()
 	if len(tags) == 0 {
 		ui.WarningMsg(nil, "no tags found")
-		newTag := ui.PromptMsg("new tag (e.g: v1.1.0):")
+		newTag, err := ui.PromptMsg("new tag (e.g: v0.1.0):")
+		if err != nil {
+			ui.SuccessMsg("Exiting.")
+			os.Exit(0)
+		}
 
-		_, err := semver.NewSemVer(newTag)
+		_, err = semver.NewSemVer(newTag)
 		if err != nil {
 			ui.ErrorMsg(err, "%s is not a valid SemVer-version number.", newTag)
 		}
 
 		if t.Message == "" {
-			t.Message = ui.PromptMsg("message (optional):")
-		}
+			t.Message, err = ui.PromptMsg("message (optional):")
+			if err != nil {
+				err = t.Repository.CreateLightweightTag(newTag)
+				if err != nil {
+					ui.ErrorMsg(err, "could not create lightweight tag %s", newTag)
+				}
+			} else {
+				err = t.Repository.CreateAnnotatedTag(newTag, t.Message)
+				if err != nil {
+					ui.ErrorMsg(err, "could not create annotated tag %s", newTag)
+				}
+			}
 
-		err = t.Repository.AddTag(newTag, t.Message)
-		if err != nil {
-			ui.ErrorMsg(err, "could not create tag %s", newTag)
 		}
 
 		ui.SuccessMsg("successfully added tag: %s", newTag)
@@ -198,7 +218,7 @@ func (t *Tago) prompt() string {
 	parts := t.LatestTag.BuildBumpedOptions()
 	answer := ui.PromptList("which part to increment?", parts[1], parts)
 	if t.Message == "" {
-		t.Message = ui.PromptMsg("message (optional):")
+		t.Message, _ = ui.PromptMsg("message (optional):")
 	}
 
 	switch answer {

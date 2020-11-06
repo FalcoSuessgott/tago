@@ -2,14 +2,13 @@ package git
 
 import (
 	"log"
-	"os"
+	"os/exec"
 	"strings"
 	"time"
 
 	"github.com/tcnksm/go-gitconfig"
 
 	"github.com/go-git/go-git/v5"
-	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
 
@@ -84,8 +83,8 @@ func NewRepository(dir string) (*Repository, error) {
 	return &Repository{r}, e
 }
 
-// AddTag adds a tag
-func (r *Repository) AddTag(tag, message string) error {
+// CreateAnnotatedTag creates an annotated tag
+func (r *Repository) CreateAnnotatedTag(tag, message string) error {
 	opts := &git.CreateTagOptions{
 		Tagger:  defaultSignature(),
 		Message: message,
@@ -104,18 +103,25 @@ func (r *Repository) AddTag(tag, message string) error {
 	return nil
 }
 
-// PushTags pushes to the specified remotre
-func (r *Repository) PushTags(remote string) error {
-	po := &git.PushOptions{
-		RemoteName: remote,
-		Progress:   os.Stdout,
-		RefSpecs:   []config.RefSpec{config.RefSpec("refs/tags/*:refs/tags/*")},
-	}
+// CreateLightweightTag creates an lightweight tag
+func (r *Repository) CreateLightweightTag(tag string) error {
 
-	err := r.Repository.Push(po)
+	head, err := r.Repository.Head()
 	if err != nil {
 		return err
 	}
 
+	n := plumbing.ReferenceName("refs/tags/" + tag)
+	t := plumbing.NewHashReference(n, head.Hash())
+
+	return r.Repository.Storer.SetReference(t)
+}
+
+// PushTags pushes to the specified remotre
+func (r *Repository) PushTags(remote string) error {
+	cmd := exec.Command("git", "push", remote, "--tags")
+	if err := cmd.Run(); err != nil {
+		return err
+	}
 	return nil
 }

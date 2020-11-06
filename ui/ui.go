@@ -109,7 +109,7 @@ func PromptList(msg, def string, options []string) int {
 }
 
 // PromptMsg prompts the user for an input message
-func PromptMsg(msg string) string {
+func PromptMsg(msg string) (string, error) {
 	res := ""
 	prompt := &survey.Input{
 		Message: msg,
@@ -117,8 +117,8 @@ func PromptMsg(msg string) string {
 
 	err := survey.AskOne(prompt, &res)
 	if err != nil {
-		return " "
+		return "", err
 	}
 
-	return res
+	return res, nil
 }
