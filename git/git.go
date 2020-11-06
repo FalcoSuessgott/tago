@@ -119,7 +119,7 @@ func (r *Repository) CreateLightweightTag(tag string) error {
 
 // PushTags pushes to the specified remotre
 func (r *Repository) PushTags(remote string) error {
-	cmd := exec.Command("git", "push", "--tags")
+	cmd := exec.Command("git", "push", remote, "--tags")
 	if err := cmd.Run(); err != nil {
 		return err
 	}
