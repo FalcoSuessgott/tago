@@ -103,6 +103,21 @@ func (r *Repository) CreateAnnotatedTag(tag, message string) error {
 	return nil
 }
 
+// HasUncommitedChanges returns true if the git index is clean
+func (r *Repository) HasUncommitedChanges() bool {
+	w, err := r.Repository.Worktree()
+	if err != nil {
+		log.Print(err)
+	}
+
+	status, err := w.Status()
+	if err != nil {
+		log.Print(err)
+	}
+
+	return status.IsClean()
+}
+
 // CreateLightweightTag creates an lightweight tag
 func (r *Repository) CreateLightweightTag(tag string) error {
 
