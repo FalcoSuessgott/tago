@@ -24,9 +24,16 @@
 > [https://semver.org/](https://semver.org/)
 
 # Installation
+## using go 
 ```
 go get github.com/FalcoSuessgott/tago
 ```
+
+## using curl
+```
+ curl -sf https://gobinaries.com/FalcoSuessgott/tago | sh
+```
+
 
 # Usage
 ```
