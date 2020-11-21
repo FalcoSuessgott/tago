@@ -86,7 +86,7 @@ var (
 			if g.Push {
 				err := g.Repository.PushTags(g.Remote)
 				if err != nil {
-					ui.ErrorMsg(err, "cannot push to remote %s", g.Remote)
+					ui.ErrorMsg(err, "cannot push %s to remote %s", newTag, g.Remote)
 				}
 				ui.SuccessMsg("pushed tag to %s", g.Remote)
 			}
