@@ -40,6 +40,15 @@ var (
 			g.parseFlags(cmd.Flags())
 			g.IsRepository()
 			g.GetTags()
+
+			if !g.Repository.HasUncommitedChanges() {
+				if !ui.PromptYN("You have uncommited changes. Do you want to continue with tagging the latest commit?") {
+					os.Exit(0)
+				}
+			} else {
+				ui.SuccessMsg("git status is clean")
+			}
+
 			if !g.Major && !g.Minor && !g.Patch {
 				newTag = g.prompt()
 			}
@@ -79,7 +88,7 @@ var (
 				if err != nil {
 					ui.ErrorMsg(err, "cannot push to remote %s", g.Remote)
 				}
-				ui.SuccessMsg("pushed tags to %s", g.Remote)
+				ui.SuccessMsg("pushed tag to %s", g.Remote)
 			}
 		},
 	}

@@ -122,3 +122,21 @@ func PromptMsg(msg string) (string, error) {
 
 	return res, nil
 }
+
+// PromptYN prompts yes/no question
+func PromptYN(msg string, params ...string) bool {
+	s := fmt.Sprintf(msg, iface(params)...)
+	res := false
+	prompt := &survey.Confirm{
+		Message: s,
+	}
+
+	err := survey.AskOne(prompt, &res)
+
+	if err != nil {
+		fmt.Println("Exiting.")
+		os.Exit(0)
+	}
+
+	return res
+}
